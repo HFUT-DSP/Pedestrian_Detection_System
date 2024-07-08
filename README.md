@@ -27,6 +27,6 @@ pnpm run dev
 
 1. 需要JDK版本为JDK17
 2. 项目用到mysql数据库和redis数据库
-3. 执行 [youlai_boot.sql](https://github.com/haoxianrui/youlai-boot/blob/master/sql/mysql8/youlai_boot.sql) 脚本完成数据库创建、表结构和基础数据的初始化。
-4. [application-dev.yml](https://github.com/haoxianrui/youlai-boot/blob/master/src/main/resources/application-dev.yml) 修改MySQL、Redis连接配置；
-5. 运行redis服务，执行 [SystemApplication.java](https://github.com/haoxianrui/youlai-boot/blob/master/src/main/java/com/youlai/system/SystemApplication.java) 的 main 方法完成后端项目启动；（单独运行后端时，可访问接口文档地址 http://localhost:8989/doc.html 验证项目启动是否成功。）
+3. 执行 youlai_boot.sql 脚本完成数据库创建、表结构和基础数据的初始化。
+4. application-dev.yml 修改MySQL、Redis连接配置；
+5. 运行redis服务，执行 SystemApplication.java 的 main 方法完成后端项目启动；（单独运行后端时，可访问接口文档地址 http://localhost:8989/doc.html 验证项目启动是否成功。）
