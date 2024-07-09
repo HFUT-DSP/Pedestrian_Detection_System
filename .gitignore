@@ -1,5 +1,6 @@
 .DS_Store
-
+# vscode相关文件
+.vscode
 # 前端
 node_modules
 .DS_Store
