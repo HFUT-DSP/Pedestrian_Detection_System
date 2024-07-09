@@ -11,7 +11,7 @@
 
 ```
 # 切换目录
-cd vue3-element-admin
+cd Frontend
 
 # 安装 pnpm
 npm install pnpm -g
