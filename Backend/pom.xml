@@ -205,6 +205,12 @@
             <artifactId>ip2region</artifactId>
             <version>${ip2region.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
