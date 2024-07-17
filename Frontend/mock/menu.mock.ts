@@ -34,6 +34,19 @@ export default defineMock([
               },
             },
             {
+              path: "camera",
+              component: "system/camera/index",
+              name: "Camera",
+              meta: {
+                title: "设备管理",
+                icon: "user",
+                hidden: false,
+                keepAlive: true,
+                alwaysShow: false,
+                params: null,
+              },
+            },
+            {
               path: "role",
               component: "system/role/index",
               name: "Role",
