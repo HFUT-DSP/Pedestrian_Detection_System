@@ -47,6 +47,19 @@ export default defineMock([
               },
             },
             {
+              path: "model",
+              component: "system/model/index",
+              name: "model",
+              meta: {
+                title: "模型管理",
+                icon: "user",
+                hidden: false,
+                keepAlive: true,
+                alwaysShow: false,
+                params: null,
+              },
+            },
+            {
               path: "role",
               component: "system/role/index",
               name: "Role",
