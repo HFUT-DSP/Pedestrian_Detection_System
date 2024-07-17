@@ -30,6 +30,7 @@
     # 启动运行
     pnpm run dev
     ```
+3. Mock服务用于模拟后端接收前端请求并发送数据给前端，若后端可以正常运行则令VITE_MOCK_DEV_SERVER = flase关闭Mock服务。
 
 ## 后端
 
