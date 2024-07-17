@@ -52,6 +52,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(requestMatcherRegistry ->
                         requestMatcherRegistry.requestMatchers(SecurityConstants.LOGIN_PATH).permitAll()
+                                .requestMatchers("/stream.m3u8").permitAll() // 允许匿名访问
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
