@@ -97,7 +97,12 @@
               align="center"
               prop="modelType"
             />
-
+            <el-table-column
+              label="模型路径"
+              width="200"
+              align="center"
+              prop="modelPath"
+            />
             <el-table-column label="状态" align="center" prop="status">
               <template #default="scope">
                 <el-tag :type="scope.row.status == 1 ? 'success' : 'info'">{{
@@ -169,7 +174,12 @@
         <el-form-item label="模型类型" prop="modelType">
           <el-input v-model="formData.modelType" placeholder="请输入模型类型" />
         </el-form-item>
-
+        <el-form-item label="模型路径" prop="modelPath">
+          <el-input v-model="formData.modelPath" placeholder="请输入模型路径" />
+        </el-form-item>
+        <el-button class="ml-3" @click="handleOpenImportDialog"
+          ><template #icon><i-ep-upload /></template>导入</el-button
+        >
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label="1">正常</el-radio>
@@ -185,6 +195,11 @@
         </div>
       </template>
     </el-drawer>
+    <!-- 模型导入弹窗 -->
+    <model-import
+      v-model:visible="importDialogVisible"
+      @import-success="handleOpenImportDialogSuccess"
+    />
   </div>
 </template>
 
@@ -292,6 +307,7 @@ async function handleOpenDialog(modelId?: number) {
       formData.id = undefined;
       formData.modelName = "";
       formData.modelType = "";
+      formData.modelPath = "";
       formData.status = 1;
     }
   } catch (error) {
@@ -301,7 +317,15 @@ async function handleOpenDialog(modelId?: number) {
     loading.value = false; // 结束加载状态
   }
 }
+/** 打开导入弹窗 */
+function handleOpenImportDialog() {
+  importDialogVisible.value = true;
+}
 
+// /** 导入用户成功 */
+function handleOpenImportDialogSuccess() {
+  handleQuery();
+}
 /** 关闭弹窗 */
 function handleCloseDialog() {
   dialog.visible = false;
@@ -366,10 +390,7 @@ function handleDelete(id?: number) {
     }
   );
 }
-/** 打开导入弹窗 */
-function handleOpenImportDialog() {
-  importDialogVisible.value = true;
-}
+
 onMounted(() => {
   handleQuery();
 });

@@ -57,6 +57,7 @@ export default defineMock([
             id: 1001,
             modelName: "模型一号",
             modelType: "第一种模型",
+            modelPath: "默认路径",
             // gender: 1,
             // avatar:
             //   "https://oss.youlai.tech/youlai-boot/2023/05/16/811270ef31f548af9cffc026dfc3777b.gif",
@@ -69,6 +70,7 @@ export default defineMock([
             id: 1002,
             modelName: "模型二号",
             modelType: "第二种模型",
+            modelPath: "默认路径",
             // gender: 1,
             // avatar:
             //   "https://oss.youlai.tech/youlai-boot/2023/05/16/811270ef31f548af9cffc026dfc3777b.gif",
@@ -167,6 +169,7 @@ const modelMap: Record<string, any> = {
     id: 1001,
     modelName: "模型一号",
     modelType: "第一种模型",
+    modelPath: "默认路径",
     // gender: 1,
     // avatar:
     //   "https://oss.youlai.tech/youlai-boot/2023/05/16/811270ef31f548af9cffc026dfc3777b.gif",
@@ -179,6 +182,7 @@ const modelMap: Record<string, any> = {
     id: 1002,
     modelName: "模型二号",
     modelType: "第二种模型",
+    modelPath: "默认路径",
     // gender: 1,
     // avatar:
     //   "https://oss.youlai.tech/youlai-boot/2023/05/16/811270ef31f548af9cffc026dfc3777b.gif",
