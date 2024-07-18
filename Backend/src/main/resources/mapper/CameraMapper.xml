@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youlai.system.mapper.CameraMapper">
+
+    <!-- 菜单路由映射 -->
+    <resultMap id="RouteMap" type="com.youlai.system.model.vo.CamerapageVO">
+        <result property="cameraName" column="camera_name" jdbcType="VARCHAR"/>
+        <result property="cameraRTSP" column="camera_r_t_s_p" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 用户分页列表 -->
+    <select id="listPagedCameras" resultType="com.youlai.system.model.vo.CamerapageVO">
+        SELECT
+            t1.id,
+            t1.camera_name,
+            t1.camera_r_t_s_p,
+            t1.status,
+            t1.create_time
+        FROM
+            camera t1
+        <where>
+            t1.is_deleted = 0
+            <if test="queryParams.status != null">
+                t1.status = #{queryParams.status}
+            </if>
+            <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>
+                AND (
+                    t1.camera_name LIKE CONCAT('%',#{queryParams.keywords},'%')
+                )
+            </if>
+            <if test="queryParams.startTime != null">
+                AND t1.create_time &gt;= #{queryParams.startTime}
+            </if>
+            <if test="queryParams.endTime != null">
+                AND t1.create_time &lt;= #{queryParams.endTime}
+            </if>
+        </where>
+        ORDER BY
+            t1.create_time DESC
+    </select>
+</mapper>

@@ -15,6 +15,8 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -44,7 +46,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 // 启用 SockJS (浏览器不支持WebSocket，SockJS 将会提供兼容性支持)
                 .withSockJS();
         registry.addEndpoint("/ws-app").setAllowedOriginPatterns("*");  // 注册了一个 /ws-app 的端点，支持 uni-app 的 ws 连接协议
-        registry.addEndpoint("/video-stream").setAllowedOrigins("*").withSockJS();
     }
 
 
