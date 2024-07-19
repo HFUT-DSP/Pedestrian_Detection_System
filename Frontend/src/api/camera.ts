@@ -67,6 +67,13 @@ class CameraAPI {
       method: "delete",
     });
   }
+
+  static getVideo(id: string) {
+    return request({
+      url: `${CAMERA_BASE_URL}/open/${id}`,
+      method: "get",
+    });
+  }
 }
 
 export default CameraAPI;

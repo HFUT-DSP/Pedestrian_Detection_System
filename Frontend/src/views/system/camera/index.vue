@@ -118,9 +118,12 @@
                   type="primary"
                   size="small"
                   link
-                  @click="realTimeMonitoring(scope.row)"
+                  @click="realTimeMonitoring(scope.row.id)"
                   ><i-ep-monitor />实时监控</el-button
                 >
+                <el-dialog v-model:visible="dialogVisible" width="70%">
+                  <VideoPlayer v-if="dialogVisible" :videoUrl="videoUrl" />
+                </el-dialog>
                 <el-button
                   v-hasPerm="['sys:camera:edit']"
                   type="primary"
@@ -205,12 +208,19 @@ defineOptions({
   inheritAttrs: false,
 });
 
+import { ref, reactive, watch, onMounted } from "vue";
+import { ElForm, ElMessage, ElMessageBox } from "element-plus";
+import { useThrottleFn } from "@vueuse/core";
+
 import CameraAPI, {
   CameraForm,
   CameraPageQuery,
   CameraPageVO,
 } from "@/api/camera";
 
+import VideoPlayer from "./components/VideoPlayer.vue";
+const dialogVisible = ref(false);
+const videoUrl = ref("");
 const queryFormRef = ref(ElForm);
 const cameraFormRef = ref(ElForm);
 
@@ -285,8 +295,18 @@ function handleSelectionChange(selection: any) {
 }
 
 /** 实时监控 */
-function realTimeMonitoring(row: { [key: string]: any }) {
-
+function realTimeMonitoring(id?:number) {
+  CameraAPI.getVideo(id);
+  dialogVisible.value = true;
+  // const rtspUrl = row.cameraRTSP;
+  // if (rtspUrl) {
+  //   console.log("--------RTSP地址为--------" + rtspUrl);
+  //   videoUrl.value = `http://localhost:8989/api/v1/flv/open/${btoa(rtspUrl)}`;
+  //   console.log("--------videoUrl为--------" + videoUrl.value);
+  //   dialogVisible.value = true;
+  // } else {
+  //   ElMessage.error("视频流地址无效");
+  // }
 }
 
 /**

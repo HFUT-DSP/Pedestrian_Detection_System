@@ -7,6 +7,7 @@ import com.youlai.system.model.form.CameraForm;
 import com.youlai.system.model.form.DictForm;
 import com.youlai.system.model.query.CameraPageQuery;
 import com.youlai.system.model.vo.CamerapageVO;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -46,4 +47,10 @@ public interface CameraService extends IService<Camera> {
      * @param ids
      */
     boolean deleteDictByIds(String ids);
+
+    /**
+     *
+     * @param id
+     */
+    HttpServletResponse openvideo(Long id, HttpServletResponse httpServletResponse);
 }

@@ -1,6 +1,8 @@
 package com.youlai.system.service;
 
 
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
  * 视频流转换接口
  * @author xufeng
@@ -15,6 +17,6 @@ public interface IFLVService {
 	 * @param response 响应请求
 	 * @author xufeng
 	 */
-	void open(String url,String userId, Object response);
+	HttpServletResponse open(String url, String userId, Object response);
 
 }

@@ -5,18 +5,18 @@ import com.youlai.system.common.result.PageResult;
 import com.youlai.system.common.result.Result;
 import com.youlai.system.enums.LogModuleEnum;
 import com.youlai.system.model.form.CameraForm;
-import com.youlai.system.model.form.DictForm;
 import com.youlai.system.model.query.CameraPageQuery;
 import com.youlai.system.model.vo.CamerapageVO;
 import com.youlai.system.plugin.norepeat.annotation.PreventRepeatSubmit;
 import com.youlai.system.plugin.syslog.annotation.LogAnnotation;
 import com.youlai.system.service.CameraService;
+import com.youlai.system.service.IFLVService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class CamerasController {
 
     private final CameraService cameraService;
+    private final IFLVService iflvService;
 
     @Operation(summary = "设备管理分页列表")
     @GetMapping("/page")
@@ -80,6 +81,16 @@ public class CamerasController {
     ) {
         boolean result = cameraService.deleteDictByIds(ids);
         return Result.judge(result);
+    }
+
+    @Operation(summary = "实时设备")
+    @GetMapping("/open/{id}")
+    public Result getVideo(@PathVariable Long id,
+            HttpServletResponse httpServletResponse
+    ){
+        log.info("开始实时监控");
+        HttpServletResponse response = cameraService.openvideo(id, httpServletResponse);
+        return Result.success();
     }
 
 

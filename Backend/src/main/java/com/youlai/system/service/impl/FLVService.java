@@ -30,7 +30,7 @@ public class FLVService implements IFLVService {
 	 * @author xufeng
 	 */
 	@Override
-	public void open(String url, String userId, Object object) {
+	public HttpServletResponse open(String url, String userId, Object object) {
 		log.info("open url:{}, userId:{}, object:{}", url, userId, object);
 		//创建转换器线程并启动
 		Converter c = ConverterRegistration.open(url, userId);
@@ -41,8 +41,8 @@ public class FLVService implements IFLVService {
 				key);
 		//添加流输出
 		c.addOutputStreamEntity(key, outEntity);
+		HttpServletResponse response = (HttpServletResponse) object;
 		try {
-			HttpServletResponse response = (HttpServletResponse) object;
 			//设置响应头
 			response.setContentType("video/x-flv");
 			response.setHeader("Connection", "keep-alive");
@@ -57,6 +57,7 @@ public class FLVService implements IFLVService {
 			e.printStackTrace();
 			//c.removeOutputStreamEntity(outEntity.getKey());
 		}
+		return response;
 	}
 
 	/**
