@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 
 const CAMERA_BASE_URL = "/api/v1/cameras";
-
+const FLV_BASE_URL = "/api/v1/flv";
 class CameraAPI {
   /**
    * 获取设备分页列表
@@ -16,6 +16,24 @@ class CameraAPI {
     });
   }
 
+  // static getVideo(url: string) {
+  //   return request<any, PageResult<CameraPageVO[]>>({
+  //     url: `${CAMERA_BASE_URL}/open/${url}`,
+  //     method: "get",
+  //   });
+  // }
+  /**
+   * 打开视频流
+   *
+   * @param url 视频流地址
+   */
+  static openVideo(url: string) {
+    return request({
+      url: `${FLV_BASE_URL}/open/${url}`,
+      method: "get",
+      responseType: "blob",
+    });
+  }
   /**
    * 获取设备表单详情
    *
@@ -70,27 +88,6 @@ class CameraAPI {
 }
 
 export default CameraAPI;
-
-/** 登录设备信息 */
-// export interface UserInfo {
-//   /** 用户ID */
-//   UserId?: number;
-
-//   /** 用户名 */
-//   Username?: string;
-
-//   /** 昵称 */
-//   nickname?: string;
-
-//   /** 头像URL */
-//   avatar?: string;
-
-//   /** 角色 */
-//   roles: string[];
-
-//   /** 权限 */
-//   perms: string[];
-// }
 
 /**
  * 设备分页查询对象

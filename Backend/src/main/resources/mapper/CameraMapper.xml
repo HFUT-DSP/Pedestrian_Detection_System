@@ -23,7 +23,7 @@
         <where>
             t1.is_deleted = 0
             <if test="queryParams.status != null">
-                t1.status = #{queryParams.status}
+                AND t1.status = #{queryParams.status}
             </if>
             <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>
                 AND (

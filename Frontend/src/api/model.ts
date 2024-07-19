@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const CAMERA_BASE_URL = "/api/v1/models";
+const MODEL_BASE_URL = "/api/v1/models";
 
 class ModelAPI {
   /**
@@ -10,7 +10,7 @@ class ModelAPI {
    */
   static getPage(queryParams: ModelPageQuery) {
     return request<any, PageResult<ModelPageVO[]>>({
-      url: `${CAMERA_BASE_URL}/page`,
+      url: `${MODEL_BASE_URL}/page`,
       method: "get",
       params: queryParams,
     });
@@ -24,7 +24,7 @@ class ModelAPI {
    */
   static getFormData(modelId: number) {
     return request<any, ModelForm>({
-      url: `${CAMERA_BASE_URL}/${modelId}/form`,
+      url: `${MODEL_BASE_URL}/${modelId}/form`,
       method: "get",
     });
   }
@@ -36,7 +36,7 @@ class ModelAPI {
    */
   static add(data: ModelForm) {
     return request({
-      url: `${CAMERA_BASE_URL}`,
+      url: `${MODEL_BASE_URL}`,
       method: "post",
       data: data,
     });
@@ -50,7 +50,7 @@ class ModelAPI {
    */
   static update(id: number, data: ModelForm) {
     return request({
-      url: `${CAMERA_BASE_URL}/${id}`,
+      url: `${MODEL_BASE_URL}/${id}`,
       method: "put",
       data: data,
     });
@@ -63,7 +63,7 @@ class ModelAPI {
    */
   static deleteByIds(ids: string) {
     return request({
-      url: `${CAMERA_BASE_URL}/${ids}`,
+      url: `${MODEL_BASE_URL}/${ids}`,
       method: "delete",
     });
   }

@@ -121,6 +121,9 @@
                   @click="realTimeMonitoring(scope.row)"
                   ><i-ep-monitor />实时监控</el-button
                 >
+                <el-dialog v-model="dialogVisible" width="70%">
+                  <video id="videoElement" controls style="width: 100%"></video>
+                </el-dialog>
                 <el-button
                   v-hasPerm="['sys:camera:edit']"
                   type="primary"
@@ -205,12 +208,20 @@ defineOptions({
   inheritAttrs: false,
 });
 
+import { ref, reactive, watch, onMounted } from "vue";
+import { ElForm, ElMessage, ElMessageBox } from "element-plus";
+import { useThrottleFn } from "@vueuse/core";
+
 import CameraAPI, {
   CameraForm,
   CameraPageQuery,
   CameraPageVO,
 } from "@/api/camera";
-
+import FlvJs from "flv.js";
+// import VideoPlayer from "./components/VideoPlayer.vue";
+// import { url } from "inspector";
+const dialogVisible = ref(false);
+const videoUrl = ref("");
 const queryFormRef = ref(ElForm);
 const cameraFormRef = ref(ElForm);
 
@@ -285,8 +296,49 @@ function handleSelectionChange(selection: any) {
 }
 
 /** 实时监控 */
-function realTimeMonitoring(row: { [key: string]: any }) {
+async function realTimeMonitoring(row: { [key: string]: any }) {
+  const rtspUrl = row.cameraRTSP;
+  if (rtspUrl) {
+    try {
+      console.log("--------RTSP地址为--------" + rtspUrl);
+      const response = await CameraAPI.openVideo(btoa(rtspUrl));
+      // const videoBlob = response.data;
+      // const videoObjectUrl = URL.createObjectURL(videoBlob);
+      // videoUrl.value = videoObjectUrl;
+      // console.log("--------videoUrl为--------" + videoUrl.value);
+      // dialogVisible.value = true;
 
+      // 使用 flv.js 播放视频流
+      const videoElement = document.getElementById("videoElement");
+      if (FlvJs.isSupported()) {
+        // // 清理现有播放器
+        // if (videoElement.flvPlayer) {
+        //   videoElement.flvPlayer.destroy();
+        // }
+        const flvPlayer = FlvJs.createPlayer({
+          type: "flv",
+          url: videoObjectUrl,
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.on(FlvJs.Events.ERROR, (errorType, errorDetail) => {
+          console.error("FLV.js 错误:", errorType, errorDetail);
+        });
+        // 等待媒体加载完成
+        videoElement.addEventListener('loadedmetadata', () => {
+          flvPlayer.play().catch(error => {
+            console.error("播放错误:", error);
+          });
+        });
+      } else {
+        ElMessage.error("FLV 格式不支持");
+      }
+    } catch (error) {
+      ElMessage.error("视频流加载失败");
+    }
+  } else {
+    ElMessage.error("视频流地址无效");
+  }
 }
 
 /**

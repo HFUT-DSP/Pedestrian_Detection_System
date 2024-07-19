@@ -68,6 +68,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           rewrite: (path) =>
             path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
         },
+        
       },
     },
     plugins: [
