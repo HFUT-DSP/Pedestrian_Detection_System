@@ -41,7 +41,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="handleQuery"
-              ><i-ep-search />搜索</el-button
+                ><i-ep-search />搜索</el-button
               >
               <el-button @click="handleResetQuery">
                 <i-ep-refresh />
@@ -59,14 +59,14 @@
                   v-hasPerm="['sys:model:add']"
                   type="success"
                   @click="handleOpenDialog()"
-                ><i-ep-plus />新增</el-button
+                  ><i-ep-plus />新增</el-button
                 >
                 <el-button
                   v-hasPerm="['sys:model:delete']"
                   type="danger"
                   :disabled="removeIds.length === 0"
                   @click="handleDelete()"
-                ><i-ep-delete />删除</el-button
+                  ><i-ep-delete />删除</el-button
                 >
               </div>
             </div>
@@ -97,12 +97,17 @@
               align="center"
               prop="modelType"
             />
-
+            <el-table-column
+              label="模型路径"
+              width="200"
+              align="center"
+              prop="modelPath"
+            />
             <el-table-column label="状态" align="center" prop="status">
               <template #default="scope">
                 <el-tag :type="scope.row.status == 1 ? 'success' : 'info'">{{
-                    scope.row.status == 1 ? "启用" : "禁用"
-                  }}</el-tag>
+                  scope.row.status == 1 ? "启用" : "禁用"
+                }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column
@@ -119,7 +124,7 @@
                   link
                   size="small"
                   @click="handleOpenDialog(scope.row.id)"
-                ><i-ep-edit />编辑</el-button
+                  ><i-ep-edit />编辑</el-button
                 >
                 <el-button
                   v-hasPerm="['sys:model:delete']"
@@ -127,7 +132,7 @@
                   link
                   size="small"
                   @click="handleDelete(scope.row.id)"
-                ><i-ep-delete />删除</el-button
+                  ><i-ep-delete />删除</el-button
                 >
               </template>
             </el-table-column>
@@ -169,7 +174,12 @@
         <el-form-item label="模型类型" prop="modelType">
           <el-input v-model="formData.modelType" placeholder="请输入模型类型" />
         </el-form-item>
-
+        <el-form-item label="模型路径" prop="modelPath">
+          <el-input v-model="formData.modelPath" placeholder="请输入模型路径" />
+        </el-form-item>
+        <el-button class="ml-3" @click="handleOpenImportDialog"
+          ><template #icon><i-ep-upload /></template>导入</el-button
+        >
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :label="1">正常</el-radio>
@@ -185,20 +195,25 @@
         </div>
       </template>
     </el-drawer>
+    <!-- 模型导入弹窗 -->
+    <model-import
+      v-model:visible="importDialogVisible"
+      @import-success="handleOpenImportDialogSuccess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ElForm, ElMessage, ElMessageBox } from "element-plus";
-import { useThrottleFn } from "@vueuse/core";
-
 defineOptions({
   name: "Model",
   inheritAttrs: false,
 });
+
 import ModelAPI, { ModelForm, ModelPageQuery, ModelPageVO } from "@/api/model";
+
 const queryFormRef = ref(ElForm);
 const modelFormRef = ref(ElForm);
+
 const loading = ref(false);
 const removeIds = ref([]);
 const total = ref(0);
@@ -208,6 +223,7 @@ const queryParams = reactive<ModelPageQuery>({
   pageNum: 1,
   pageSize: 10,
 });
+
 const dateTimeRange = ref("");
 watch(dateTimeRange, (newVal) => {
   if (newVal) {
@@ -218,21 +234,26 @@ watch(dateTimeRange, (newVal) => {
     queryParams.endTime = undefined;
   }
 });
+
 /**  模型弹窗对象  */
 const dialog = reactive({
   visible: false,
   title: "",
 });
+
 /** 导入弹窗显示状态 */
 const importDialogVisible = ref(false);
+
 // 模型表单数据
 const formData = reactive<ModelForm>({
   status: 1,
 });
+
 /** 模型表单校验规则  */
 const rules = reactive({
   modelName: [{ required: true, message: "模型名不能为空", trigger: "blur" }],
 });
+
 /** 查询 */
 function handleQuery() {
   loading.value = true;
@@ -246,6 +267,7 @@ function handleQuery() {
       loading.value = false;
     });
 }
+
 /** 重置查询 */
 function handleResetQuery() {
   queryFormRef.value.resetFields();
@@ -256,10 +278,12 @@ function handleResetQuery() {
   queryParams.endTime = undefined;
   handleQuery();
 }
+
 /** 行复选框选中记录选中ID集合 */
 function handleSelectionChange(selection: any) {
   removeIds.value = selection.map((item: any) => item.id);
 }
+
 /**
  * 打开弹窗
  *
@@ -283,6 +307,7 @@ async function handleOpenDialog(modelId?: number) {
       formData.id = undefined;
       formData.modelName = "";
       formData.modelType = "";
+      formData.modelPath = "";
       formData.status = 1;
     }
   } catch (error) {
@@ -292,14 +317,25 @@ async function handleOpenDialog(modelId?: number) {
     loading.value = false; // 结束加载状态
   }
 }
+/** 打开导入弹窗 */
+function handleOpenImportDialog() {
+  importDialogVisible.value = true;
+}
+
+// /** 导入用户成功 */
+function handleOpenImportDialogSuccess() {
+  handleQuery();
+}
 /** 关闭弹窗 */
 function handleCloseDialog() {
   dialog.visible = false;
   modelFormRef.value.resetFields();
   modelFormRef.value.clearValidate();
+
   formData.id = undefined;
   formData.status = 1;
 }
+
 /** 表单提交 */
 const handleSubmit = useThrottleFn(() => {
   modelFormRef.value.validate((valid: any) => {
@@ -309,7 +345,6 @@ const handleSubmit = useThrottleFn(() => {
       if (modelId) {
         ModelAPI.update(modelId, formData)
           .then(() => {
-            console.log(formData);
             ElMessage.success("修改模型成功");
             handleCloseDialog();
             handleResetQuery();
@@ -318,7 +353,6 @@ const handleSubmit = useThrottleFn(() => {
       } else {
         ModelAPI.add(formData)
           .then(() => {
-            console.log(formData);
             ElMessage.success("新增模型成功");
             handleCloseDialog();
             handleResetQuery();
@@ -328,6 +362,7 @@ const handleSubmit = useThrottleFn(() => {
     }
   });
 }, 3000);
+
 /** 删除模型 */
 function handleDelete(id?: number) {
   const modelIds = [id || removeIds.value].join(",");
@@ -335,6 +370,7 @@ function handleDelete(id?: number) {
     ElMessage.warning("请勾选删除项");
     return;
   }
+
   ElMessageBox.confirm("确认删除模型?", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -354,10 +390,7 @@ function handleDelete(id?: number) {
     }
   );
 }
-/** 打开导入弹窗 */
-function handleOpenImportDialog() {
-  importDialogVisible.value = true;
-}
+
 onMounted(() => {
   handleQuery();
 });

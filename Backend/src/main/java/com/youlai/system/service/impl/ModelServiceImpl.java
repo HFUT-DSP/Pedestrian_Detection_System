@@ -74,11 +74,11 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
     @Override
     public boolean updateDict(Long id, ModelForm modelForm){
         String modelName = modelForm.getModelName();
-//        long count = this.count(new LambdaQueryWrapper<Model>()
-//                .eq(Model::getModelName, modelName)
-//                .ne(Model::getId, id)
-//        );
-//        Assert.isTrue(count == 0, "模型已存在");
+        long count = this.count(new LambdaQueryWrapper<Model>()
+                .eq(Model::getModelName, modelName)
+                .ne(Model::getId, id)
+        );
+        Assert.isTrue(count == 0, "模型已存在");
 
         // form -> entity
         Model entity = modelConverter.convertToEntity(modelForm);
@@ -98,11 +98,11 @@ public class ModelServiceImpl extends ServiceImpl<ModelMapper, Model> implements
         // 保存模型
         Model entity = modelConverter.convertToEntity(modelForm);
 
-//        // 校验 code 是否唯一
-//        long count = this.count(new LambdaQueryWrapper<Model>()
-//                .eq(Model::getModelName, entity.getModelName())
-//        );
-//        Assert.isTrue(count == 0, "模型已存在");
+        // 校验 code 是否唯一
+        long count = this.count(new LambdaQueryWrapper<Model>()
+                .eq(Model::getModelName, entity.getModelName())
+        );
+        Assert.isTrue(count == 0, "模型已存在");
 
         boolean result = this.save(entity);
         return result;

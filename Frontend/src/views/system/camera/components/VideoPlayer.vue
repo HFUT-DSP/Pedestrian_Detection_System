@@ -8,10 +8,19 @@
 import { ref, onMounted, watch } from "vue";
 
 const props = defineProps<{
-  type: "video/flv";
   videoUrl: string;
 }>();
 
+// 1.vue3 ts setup语法糖 环境下的  prop写法
+// 2. 拼接真实的视频流 也就是open/xx/${url}
+/**
+ * if(flvjs.isSupported()){const flvPlayer =flvjs.createPlayer({type: 'flv',
+url:flvStreamUr1
+});
+flvPlayer.attachMediaElement(videoElement.value);flvPlayer.load();flvPlayer.play();
+else {
+console
+ */
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 watch(
