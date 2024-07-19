@@ -189,6 +189,9 @@
 </template>
 
 <script setup lang="ts">
+import { ElForm, ElMessage, ElMessageBox } from "element-plus";
+import { useThrottleFn } from "@vueuse/core";
+
 defineOptions({
   name: "Model",
   inheritAttrs: false,
@@ -306,6 +309,7 @@ const handleSubmit = useThrottleFn(() => {
       if (modelId) {
         ModelAPI.update(modelId, formData)
           .then(() => {
+            console.log(formData);
             ElMessage.success("修改模型成功");
             handleCloseDialog();
             handleResetQuery();
@@ -314,6 +318,7 @@ const handleSubmit = useThrottleFn(() => {
       } else {
         ModelAPI.add(formData)
           .then(() => {
+            console.log(formData);
             ElMessage.success("新增模型成功");
             handleCloseDialog();
             handleResetQuery();
