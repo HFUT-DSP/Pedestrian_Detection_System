@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youlai.system.mapper.ModelMapper">
+
+    <!-- 菜单路由映射 -->
+    <resultMap id="RouteMap" type="com.youlai.system.model.vo.ModelpageVO">
+        <result property="modelName" column="model_name" jdbcType="VARCHAR"/>
+        <result property="modelType" column="model_type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 用户分页列表 -->
+    <select id="listPagedModels" resultType="com.youlai.system.model.vo.ModelpageVO">
+        SELECT
+            t1.id,
+            t1.model_name,
+            t1.model_type,
+            t1.status,
+            t1.create_time
+        FROM
+            model t1
+        <where>
+            t1.is_deleted = 0
+            <if test="queryParams.status != null">
+                AND t1.status = #{queryParams.status}
+            </if>
+            <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>
+                AND (
+                    t1.model_name LIKE CONCAT('%',#{queryParams.keywords},'%')
+                )
+            </if>
+            <if test="queryParams.startTime != null">
+                AND t1.create_time &gt;= #{queryParams.startTime}
+            </if>
+            <if test="queryParams.endTime != null">
+                AND t1.create_time &lt;= #{queryParams.endTime}
+            </if>
+        </where>
+        ORDER BY
+            t1.create_time DESC
+    </select>
+
+</mapper>
