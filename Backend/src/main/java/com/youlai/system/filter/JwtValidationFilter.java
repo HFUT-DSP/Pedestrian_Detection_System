@@ -48,7 +48,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+//        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImRlcHRJZCI6MSwiZGF0YVNjb3BlIjoxLCJleHAiOjE3MjEyMTA0OTYsInVzZXJJZCI6MiwiaWF0IjoxNzIxMjAzMjk2LCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIl0sImp0aSI6ImFkMGU1YjQ2MjczMzQ1ZjlhNWU3ZGNlM2E2MDAzNmQ1In0.e_qDVDL7O9P45bc9RbyNFto1ZlwXNMB5RIoNBgl21lw";
         try {
             if (StrUtil.isNotBlank(token) && token.startsWith(SecurityConstants.JWT_TOKEN_PREFIX)) {
                 token = token.substring(SecurityConstants.JWT_TOKEN_PREFIX.length()); // 去除 Bearer 前缀
