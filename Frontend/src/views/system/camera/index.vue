@@ -118,12 +118,21 @@
                   type="primary"
                   size="small"
                   link
-                  @click="realTimeMonitoring(scope.row)"
+                  @click="startStreaming(scope.row)"
                   ><i-ep-monitor />实时监控</el-button
                 >
-                <el-dialog v-model="dialogVisible" width="70%">
+                <video
+                  :id="'video' + scope.row.id"
+                  controls
+                  autoplay
+                  muted
+                  width="100%"
+                  height="100%"
+                  style="object-fit: fill"
+                ></video>
+                <!-- <el-dialog v-model="dialogVisible" width="70%">
                   <video id="videoElement" controls style="width: 100%"></video>
-                </el-dialog>
+                </el-dialog> -->
                 <el-button
                   v-hasPerm="['sys:camera:edit']"
                   type="primary"
@@ -208,34 +217,27 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import { ref, reactive, watch, onMounted } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
 import { ElForm, ElMessage, ElMessageBox } from "element-plus";
 import { useThrottleFn } from "@vueuse/core";
+import CameraAPI, { CameraForm, CameraPageQuery, CameraPageVO } from "@/api/camera";
 
-import CameraAPI, {
-  CameraForm,
-  CameraPageQuery,
-  CameraPageVO,
-} from "@/api/camera";
-import FlvJs from "flv.js";
-// import VideoPlayer from "./components/VideoPlayer.vue";
-// import { url } from "inspector";
+const videoElements = reactive<{ [key: string]: HTMLVideoElement }>({});
+const webRtcServers = reactive<{ [key: string]: any }>({});
+const cameraIp = "127.0.0.1:8000";
 const dialogVisible = ref(false);
-const videoUrl = ref("");
-const queryFormRef = ref(ElForm);
-const cameraFormRef = ref(ElForm);
-
+const queryFormRef = ref<InstanceType<typeof ElForm>>();
+const cameraFormRef = ref<InstanceType<typeof ElForm>>();
 const loading = ref(false);
-const removeIds = ref([]);
+const removeIds = ref<number[]>([]);
 const total = ref(0);
-const pageData = ref<CameraPageVO[]>();
-/** 设备查询参数  */
+const pageData = ref<CameraPageVO[]>([]);
 const queryParams = reactive<CameraPageQuery>({
   pageNum: 1,
   pageSize: 10,
 });
+const dateTimeRange = ref<string | null>("");
 
-const dateTimeRange = ref("");
 watch(dateTimeRange, (newVal) => {
   if (newVal) {
     queryParams.startTime = newVal[0];
@@ -246,26 +248,19 @@ watch(dateTimeRange, (newVal) => {
   }
 });
 
-/**  设备弹窗对象  */
 const dialog = reactive({
   visible: false,
   title: "",
 });
 
-/** 导入弹窗显示状态 */
-const importDialogVisible = ref(false);
-
-// 设备表单数据
 const formData = reactive<CameraForm>({
   status: 1,
 });
 
-/** 设备表单校验规则  */
 const rules = reactive({
   cameraName: [{ required: true, message: "设备名不能为空", trigger: "blur" }],
 });
 
-/** 查询 */
 function handleQuery() {
   loading.value = true;
   CameraAPI.getPage(queryParams)
@@ -279,88 +274,54 @@ function handleQuery() {
     });
 }
 
-/** 重置查询 */
 function handleResetQuery() {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   dateTimeRange.value = "";
   queryParams.pageNum = 1;
-  // queryParams.deptId = undefined;
   queryParams.startTime = undefined;
   queryParams.endTime = undefined;
   handleQuery();
 }
 
-/** 行复选框选中记录选中ID集合 */
-function handleSelectionChange(selection: any) {
-  removeIds.value = selection.map((item: any) => item.id);
+function handleSelectionChange(selection: CameraPageVO[]) {
+  removeIds.value = selection.map(item => item.id);
 }
 
-/** 实时监控 */
-async function realTimeMonitoring(row: { [key: string]: any }) {
-  const rtspUrl = row.cameraRTSP;
-  if (rtspUrl) {
-    try {
-      console.log("--------RTSP地址为--------" + rtspUrl);
-      const response = await CameraAPI.openVideo(btoa(rtspUrl));
-      // const videoBlob = response.data;
-      // const videoObjectUrl = URL.createObjectURL(videoBlob);
-      // videoUrl.value = videoObjectUrl;
-      // console.log("--------videoUrl为--------" + videoUrl.value);
-      // dialogVisible.value = true;
-
-      // 使用 flv.js 播放视频流
-      const videoElement = document.getElementById("videoElement");
-      if (FlvJs.isSupported()) {
-        // // 清理现有播放器
-        // if (videoElement.flvPlayer) {
-        //   videoElement.flvPlayer.destroy();
-        // }
-        const flvPlayer = FlvJs.createPlayer({
-          type: "flv",
-          url: videoObjectUrl,
-        });
-        flvPlayer.attachMediaElement(videoElement);
-        flvPlayer.load();
-        flvPlayer.on(FlvJs.Events.ERROR, (errorType, errorDetail) => {
-          console.error("FLV.js 错误:", errorType, errorDetail);
-        });
-        // 等待媒体加载完成
-        videoElement.addEventListener('loadedmetadata', () => {
-          flvPlayer.play().catch(error => {
-            console.error("播放错误:", error);
-          });
-        });
-      } else {
-        ElMessage.error("FLV 格式不支持");
-      }
-    } catch (error) {
-      ElMessage.error("视频流加载失败");
+function startStreaming(row: CameraPageVO) {
+  const videoId = 'video' + row.id;
+  if (!webRtcServers[row.id]) {
+    const videoElement = document.getElementById(videoId) as HTMLVideoElement;
+    if (videoElement) {
+      const webRtcServer = new window.WebRtcStreamer(videoId, location.protocol + "//" + cameraIp);
+      webRtcServer.connect(row.cameraRTSP);
+      webRtcServers[row.id] = webRtcServer;
     }
-  } else {
-    ElMessage.error("视频流地址无效");
   }
 }
 
-/**
- * 打开弹窗
- *
- * @param cameraId 设备ID
- */
+onBeforeUnmount(() => {
+  for (const key in webRtcServers) {
+    if (webRtcServers[key]) {
+      webRtcServers[key].disconnect();
+      delete webRtcServers[key];
+    }
+  }
+});
+
 async function handleOpenDialog(cameraId?: number) {
   dialog.visible = true;
-  loading.value = true; // 开始加载状态
+  loading.value = true;
   try {
     if (cameraId) {
       dialog.title = "修改设备";
       const data = await CameraAPI.getFormData(cameraId);
       if (data) {
-        Object.assign(formData, data); // 更新formData
+        Object.assign(formData, data);
       } else {
         ElMessage.error("获取设备详情失败:未找到设备数据");
       }
     } else {
       dialog.title = "新增设备";
-      // 清空或重置formData
       formData.id = undefined;
       formData.cameraName = "";
       formData.cameraRTSP = "";
@@ -370,23 +331,20 @@ async function handleOpenDialog(cameraId?: number) {
     console.error("Error fetching device data:", error);
     ElMessage.error("获取设备详情失败：" + error.message);
   } finally {
-    loading.value = false; // 结束加载状态
+    loading.value = false;
   }
 }
 
-/** 关闭弹窗 */
 function handleCloseDialog() {
   dialog.visible = false;
-  cameraFormRef.value.resetFields();
-  cameraFormRef.value.clearValidate();
-
+  cameraFormRef.value?.resetFields();
+  cameraFormRef.value?.clearValidate();
   formData.id = undefined;
   formData.status = 1;
 }
 
-/** 表单提交 */
 const handleSubmit = useThrottleFn(() => {
-  cameraFormRef.value.validate((valid: any) => {
+  cameraFormRef.value?.validate((valid: boolean) => {
     if (valid) {
       const cameraId = formData.id;
       loading.value = true;
@@ -411,7 +369,6 @@ const handleSubmit = useThrottleFn(() => {
   });
 }, 3000);
 
-/** 删除设备 */
 function handleDelete(id?: number) {
   const cameraIds = [id || removeIds.value].join(",");
   if (!cameraIds) {
@@ -438,10 +395,11 @@ function handleDelete(id?: number) {
     }
   );
 }
-/** 打开导入弹窗 */
+
 function handleOpenImportDialog() {
   importDialogVisible.value = true;
 }
+
 onMounted(() => {
   handleQuery();
 });
