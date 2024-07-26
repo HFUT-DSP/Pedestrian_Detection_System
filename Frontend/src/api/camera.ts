@@ -27,12 +27,22 @@ class CameraAPI {
    *
    * @param url 视频流地址
    */
-  static openVideo(url: string) {
-    return request({
-      url: `${FLV_BASE_URL}/open/${url}`,
-      method: "get",
-      responseType: "blob",
-    });
+  static async openVideo(url: string) {
+    const fullUrl = `${FLV_BASE_URL}/open/${url}`;
+    console.log("请求的完整URL:", fullUrl);
+    try {
+      const response = await request({
+        url: fullUrl,
+        method: "get",
+        responseType: "blob",
+      });
+      console.log("请求成功，响应状态:", response.status);
+      console.log("响应数据:", response.data);
+      return response;
+    } catch (error) {
+      console.error("请求视频流数据失败:", error);
+      throw error;
+    }
   }
   /**
    * 获取设备表单详情
