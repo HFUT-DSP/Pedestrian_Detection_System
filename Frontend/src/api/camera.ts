@@ -16,24 +16,6 @@ class CameraAPI {
     });
   }
 
-  // static getVideo(url: string) {
-  //   return request<any, PageResult<CameraPageVO[]>>({
-  //     url: `${CAMERA_BASE_URL}/open/${url}`,
-  //     method: "get",
-  //   });
-  // }
-  /**
-   * 打开视频流
-   *
-   * @param url 视频流地址
-   */
-  static openVideo(url: string) {
-    return request({
-      url: `${FLV_BASE_URL}/open/${url}`,
-      method: "get",
-      responseType: "blob",
-    });
-  }
   /**
    * 获取设备表单详情
    *
