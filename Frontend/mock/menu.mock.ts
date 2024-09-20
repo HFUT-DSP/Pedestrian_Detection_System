@@ -113,6 +113,49 @@ export default defineMock([
             },
           ],
         },
+
+        {
+          path: "/recognition",
+          component: "Layout",
+          redirect: "/recognition/retrieval",
+          name: "/recognition",
+          meta: {
+            title: "行人识别",
+            icon: "system",
+            hidden: false,
+            alwaysShow: false,
+            params: null,
+          },
+          children: [
+            {
+              path: "monitor",
+              component: "recognition/monitor/index",
+              name: "Monitor",
+              meta: {
+                title: "实时监控",
+                icon: "user",
+                hidden: false,
+                keepAlive: true,
+                alwaysShow: false,
+                params: null,
+              },
+            },
+            {
+              path: "retrieval",
+              component: "recognition/retrieval/index",
+              name: "Retrieval",
+              meta: {
+                title: "实时检索",
+                icon: "user",
+                hidden: false,
+                keepAlive: true,
+                alwaysShow: false,
+                params: null,
+              },
+            },
+          ],
+        },
+
         {
           path: "/api",
           component: "Layout",

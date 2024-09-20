@@ -1,51 +1,6 @@
 import { defineMock } from "./base";
 
 export default defineMock([
-  // {
-  //   url: "cameras/me",
-  //   method: ["GET"],
-  //   body: {
-  //     code: "00000",
-  //     data: {
-  //       cameraId: 100,
-  //       cameraName: "1号摄像头",
-  //       cameraRTSP: "https://www.hfut.edu.cn",
-  //       // avatar:
-  //       //   "https://oss.youlai.tech/youlai-boot/2023/05/16/811270ef31f548af9cffc026dfc3777b.gif",
-  //       // roles: ["ROOT"],
-  //       perms: [
-  //         // "sys:menu:delete",
-  //         // "sys:dept:edit",
-  //         // "sys:dict_type:add",
-  //         // "sys:dict:edit",
-  //         // "sys:dict:delete",
-  //         // "sys:dict_type:edit",
-  //         // "sys:menu:add",
-  //         // "sys:user:add",
-  //         // "sys:role:edit",
-  //         // "sys:dept:delete",
-  //         // "sys:user:edit",
-  //         // "sys:user:delete",
-  //         // "sys:user:password:reset",
-  //         // "sys:dept:add",
-  //         // "sys:role:delete",
-  //         // "sys:dict_type:delete",
-  //         // "sys:menu:edit",
-  //         // "sys:dict:add",
-  //         // "sys:role:add",
-  //         // "sys:user:query",
-  //         // "sys:user:export",
-  //         "sys:camera:query",
-  //         "sys:camera:add",
-  //         "sys:camera:video",
-  //         "sys:camera:delete",
-  //         "sys:camera:edit",
-  //       ],
-  //     },
-  //     msg: "一切ok",
-  //   },
-  // },
-
   {
     url: "cameras/page",
     method: ["GET"],
