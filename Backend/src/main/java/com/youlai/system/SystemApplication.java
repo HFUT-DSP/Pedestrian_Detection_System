@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.ArrayList;
+
 @SpringBootApplication
 @ConfigurationPropertiesScan
 //@ComponentScan(basePackages = {"com.youlai.system.handler"}) // 指定包含 VideoStreamHandler 的包
@@ -13,3 +15,5 @@ public class SystemApplication {
         SpringApplication.run(SystemApplication.class, args);
     }
 }
+
+
