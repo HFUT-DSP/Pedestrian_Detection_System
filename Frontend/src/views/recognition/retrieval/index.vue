@@ -21,7 +21,7 @@
       </div>
 
       <div class="result-placeholder">
-        <h3>相关视频：拍摄自{{ cameraName }}</h3> <!-- 显示CameraName -->
+        <h3>相关视频{{ cameraName ? `：拍摄自${cameraName}` : '' }}</h3>
         <div class="video-placeholder">
           <video v-if="videoUrl" :src="videoUrl" controls />
           <p v-else>相关视频</p>
@@ -31,56 +31,54 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import { uploadImage } from '@/api/recognition'; // 引入定义好的接口
 
-export default {
-  data() {
+export default defineComponent({
+  setup() {
+    const imageUrl = ref<string | null>(null);  // 上传的图片URL
+    const imageFile = ref<File | null>(null);   // 图片文件
+    const similarImageUrl = ref<string | null>(null);  // 最相似图片的URL
+    const videoUrl = ref<string | null>(null);  // 视频URL
+    const cameraName = ref<string | null>(null);  // 摄像机名称
+
+    const onFileChange = (event: Event) => {
+      const input = event.target as HTMLInputElement;
+      const file = input.files ? input.files[0] : null;
+      if (file) {
+        imageUrl.value = URL.createObjectURL(file);
+        imageFile.value = file;
+      }
+    };
+
+    const search = async () => {
+      if (!imageFile.value) {
+        alert('请先上传图片！');
+        return;
+      }
+
+      try {
+        // 调用上传图片接口
+        const response = await uploadImage(imageFile.value);
+        similarImageUrl.value = response.data.similarImageUrl;
+        videoUrl.value = response.data.videoUrl;
+        cameraName.value = response.data.cameraName;
+      } catch (error) {
+        console.error('识别检索时出错:', error);
+      }
+    };
+
     return {
-      imageUrl: '', // 上传图片的URL
-      imageFile: null, // 存储上传的图片文件
-      similarImageUrl: '', // 后端返回的最相似图片的URL
-      videoUrl: '', // 后端返回的视频资源的URL
-      cameraName: '', // 从后端返回的CameraName
+      imageUrl,
+      similarImageUrl,
+      videoUrl,
+      cameraName,
+      onFileChange,
+      search,
     };
   },
-  methods: {
-    onFileChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.imageUrl = URL.createObjectURL(file);
-        this.imageFile = file; // 保存上传的图片文件
-      }
-    },
-    async search() {
-      if (!this.imageFile) {
-        alert("请先上传图片！");
-      } else {
-        const formData = new FormData();
-        formData.append('file', this.imageFile);
-
-        try {
-          // 发送图片到后端
-          const response = await axios.post("/dev-api/api/v1/retrieval", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          // 处理后端返回的图像和视频URL及CameraName
-          const responseData = response.data.data; // 解包数据
-          this.similarImageUrl = responseData.similarImageUrl; // 后端返回的图片URL
-          this.videoUrl = responseData.videoUrl; // 后端返回的视频URL
-          this.cameraName = responseData.cameraName; // 后端返回的摄像机名称
-          console.log("最相似图像地址: ", this.similarImageUrl);
-          console.log("视频地址: ", this.videoUrl);
-          console.log("摄像头名称: ", this.cameraName);
-        } catch (error) {
-          console.error('Error during image recognition:', error);
-        }
-      }
-    },
-  },
-};
+});
 </script>
 
 <style scoped>
