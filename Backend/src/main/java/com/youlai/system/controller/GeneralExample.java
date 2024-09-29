@@ -9,7 +9,6 @@ import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import io.milvus.Response.DescCollResponseWrapper;
 import io.milvus.Response.GetCollStatResponseWrapper;
-import io.milvus.Response.MutationResultWrapper;
 import io.milvus.Response.QueryResultsWrapper;
 import io.milvus.Response.SearchResultsWrapper;
 import io.milvus.client.MilvusServiceClient;
@@ -83,6 +82,7 @@ public class GeneralExample {
     private static final MilvusServiceClient milvusClient;
     private static Map<String, String> imagespath_Allmap;
     private static Map<Integer, String> id_imagepath = new HashMap();
+
     private static final String COLLECTION_NAME = "example_sample";
     private static final String ID_FIELD = "userID";
     private static final String VECTOR_FIELD = "archive_feature";
@@ -342,15 +342,14 @@ public class GeneralExample {
     private R<MutationResult> insert(String partitionName, int count) {
         System.out.println("========== insert() ==========");
         List<List<Float>> vectors = this.generateFloatVectors("images/");
-        Random ran = new Random();
+        int ranInt = 0;
         List<Integer> ages = new ArrayList();
         Set<Integer> usedAges = new HashSet();
         Iterator<String> iterator = imagespath_Allmap.keySet().iterator();
 
         for(long i = 0L; i < (long)count; ++i) {
-            int ranInt;
             do {
-                ranInt = ran.nextInt(512);
+                ranInt++;
             } while(usedAges.contains(ranInt));
 
             usedAges.add(ranInt);
@@ -386,6 +385,7 @@ public class GeneralExample {
                     Mat image = Imgcodecs.imread(imagePath + fileName);
                     long[] inputShape = new long[]{1L, 3L, 224L, 224L};
                     float[] inputData = new float[150528];
+
                     if (image.empty()) {
                         System.out.println("图片出现问题:" + fileName);
                     } else {
@@ -485,22 +485,22 @@ public class GeneralExample {
         List<Long> deleteIds = new ArrayList();
         Random ran = new Random();
         R<MutationResult> result = example.insert("p1", 437);
-        MutationResultWrapper wrapper = new MutationResultWrapper((MutationResult)result.getData());
-        List<Long> ids = wrapper.getLongIDs();
-        deleteIds.add((Long)ids.get(ran.nextInt(437)));
-        example.getCollectionStatistics();
-        example.describeIndex();
-        example.getIndexBuildProgress();
-        example.getIndexState();
-//        String searchExpr = "search_image/";
-//        example.searchFace(searchExpr);
+//        MutationResultWrapper wrapper = new MutationResultWrapper((MutationResult)result.getData());
+//        List<Long> ids = wrapper.getLongIDs();
+//        deleteIds.add((Long)ids.get(ran.nextInt(437)));
+//        example.getCollectionStatistics();
+//        example.describeIndex();
+//        example.getIndexBuildProgress();
+//        example.getIndexState();
+////        String searchExpr = "search_image/";
+////        example.searchFace(searchExpr);
         example.searchFace("search_image1/");
 
-        example.compact();
-        example.getCollectionStatistics();
-        example.releaseCollection();
-        example.dropPartition("p1");
-        example.dropIndex();
-        example.dropCollection();
+//        example.compact();
+//        example.getCollectionStatistics();
+//        example.releaseCollection();
+//        example.dropPartition("p1");
+//        example.dropIndex();
+//        example.dropCollection();
     }
 }

@@ -27,6 +27,8 @@ public class Milvus extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    private Integer milvusid;
+
     private String similarImageUrl; // 最相似图片的URL
 
     private String videoUrl; // 视频资源的URL

@@ -124,22 +124,22 @@ public class Detection {
             byte[] imageBytes = matOfByte.toArray();
 //            String base64String = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
             String base64String = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
-
-            frameWebSocketHandler.broadcastImage(base64String);
-            // 检查并清理 Base64 字符串
-            if (base64String.startsWith("data:image/jpeg;base64,")) {
-                base64String = base64String.substring("data:image/jpeg;base64,".length());
-            }
-
-            // 将 Base64 字符串转换为字节数组并推送到前端
-            try {
-                imageBytes = java.util.Base64.getDecoder().decode(base64String);
-                String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
-                frameWebSocketHandler.broadcastImage(imageBase64); // 广播图像
-//                return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageBytes);
-            } catch (IllegalArgumentException e) {
-                System.err.println("Base64 解码失败：" + e.getMessage());
-            }
+            return base64String;
+//            frameWebSocketHandler.broadcastImage(base64String);
+//            // 检查并清理 Base64 字符串
+//            if (base64String.startsWith("data:image/jpeg;base64,")) {
+//                base64String = base64String.substring("data:image/jpeg;base64,".length());
+//            }
+//
+//            // 将 Base64 字符串转换为字节数组并推送到前端
+//            try {
+//                imageBytes = Base64.getDecoder().decode(base64String);
+//                String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
+//                frameWebSocketHandler.broadcastImage(imageBase64); // 广播图像
+////                return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageBytes);
+//            } catch (IllegalArgumentException e) {
+//                System.err.println("Base64 解码失败：" + e.getMessage());
+//            }
 
         }
 
