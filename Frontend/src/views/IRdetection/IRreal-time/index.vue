@@ -162,7 +162,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
 import CameraAPI, { CameraPageQuery, CameraPageVO } from "@/api/camera";
-import DetectionAPI, { CameraForm } from "@/api/detection";
+import DetectionAPI, { CameraForm } from "@/api/IRdetection";
 
 const loading = ref(false);
 const total = ref(0);
